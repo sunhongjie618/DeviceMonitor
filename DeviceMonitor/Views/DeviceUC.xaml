@@ -1,0 +1,191 @@
+<UserControl x:Class="DeviceMonitor.Views.DeviceUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="1400">
+
+    <UserControl.Resources>
+        <Style x:Key="GhostButton" TargetType="Button">
+            <Setter Property="Foreground" Value="#CFE8F5"/>
+            <Setter Property="Background" Value="#1A2FD6E8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="14,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#332FD6E8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#552FD6E8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ChipLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#7F9FB5"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+
+        <Style x:Key="ChipValue" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#2FD6E8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="0,3,0,0"/>
+        </Style>
+
+        <Style x:Key="Head" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#7F9FB5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="Cell" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#CFE8F5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10,5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="44"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- 标题 -->
+        <Border Background="#1118aabd" CornerRadius="4">
+            <Grid Margin="16,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title}" Foreground="White" FontSize="16"/>
+                    <TextBlock Text="{Binding Subtitle}" Foreground="#8FAFC4" FontSize="12"
+                               Margin="14,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button Content="立即刷新" Style="{StaticResource GhostButton}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Command="{Binding RefreshNowCommand}"/>
+            </Grid>
+        </Border>
+
+        <!-- 通讯概况 -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0">
+            <Border Background="#0D1E33" CornerRadius="4" Padding="14,7" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="通讯状态" Style="{StaticResource ChipLabel}"/>
+                    <TextBlock Text="{Binding ConnectionStatus}" Style="{StaticResource ChipValue}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#0D1E33" CornerRadius="4" Padding="14,7" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="串口参数" Style="{StaticResource ChipLabel}"/>
+                    <TextBlock Text="{Binding ConnectionText}" Style="{StaticResource ChipValue}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#0D1E33" CornerRadius="4" Padding="14,7" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="从站 / 周期" Style="{StaticResource ChipLabel}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding SlaveText}" Style="{StaticResource ChipValue}"/>
+                        <TextBlock Text=" · " Style="{StaticResource ChipValue}"/>
+                        <TextBlock Text="{Binding PollIntervalText}" Style="{StaticResource ChipValue}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+            <Border Background="#0D1E33" CornerRadius="4" Padding="14,7" Margin="0,0,10,0">
+                <StackPanel>
+                    <TextBlock Text="最近采集" Style="{StaticResource ChipLabel}"/>
+                    <TextBlock Text="{Binding LastUpdateText}" Style="{StaticResource ChipValue}"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#0D1E33" CornerRadius="4" Padding="14,7">
+                <StackPanel>
+                    <TextBlock Text="点位（已采 / 总数）" Style="{StaticResource ChipLabel}"/>
+                    <TextBlock Text="{Binding PointSummary}" Style="{StaticResource ChipValue}"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- 点位实时表 -->
+        <Border Grid.Row="2" Margin="0,8,0,0" Background="#0a18aabd" CornerRadius="4"
+                BorderBrush="#9918aabd" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="34"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <!-- 表头 -->
+                <Border Background="#0D1E33">
+                    <Grid Margin="14,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="90"/>
+                            <ColumnDefinition Width="80"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="点位名称" Style="{StaticResource Head}"/>
+                        <TextBlock Grid.Column="1" Text="寄存器" Style="{StaticResource Head}"/>
+                        <TextBlock Grid.Column="2" Text="数据类型" Style="{StaticResource Head}"/>
+                        <TextBlock Grid.Column="3" Text="单位" Style="{StaticResource Head}"/>
+                        <TextBlock Grid.Column="4" Text="当前值" Style="{StaticResource Head}"/>
+                        <TextBlock Grid.Column="5" Text="状态" Style="{StaticResource Head}"/>
+                    </Grid>
+                </Border>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Height="34" BorderBrush="#1418aabd" BorderThickness="0,0,0,1">
+                                    <Grid Margin="14,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="220"/>
+                                            <ColumnDefinition Width="110"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding Name}" Style="{StaticResource Cell}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Address}" Style="{StaticResource Cell}"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding DataType}" Style="{StaticResource Cell}"/>
+                                        <TextBlock Grid.Column="3" Text="{Binding Unit}" Style="{StaticResource Cell}"/>
+                                        <TextBlock Grid.Column="4" Text="{Binding ValueText}" Style="{StaticResource Cell}"
+                                                   Foreground="#2FD6E8" FontSize="13"/>
+                                        <TextBlock Grid.Column="5" Text="{Binding StatusText}">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock" BasedOn="{StaticResource Cell}">
+                                                    <Setter Property="Foreground" Value="#F5A623"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding StatusText}" Value="正常">
+                                                            <Setter Property="Foreground" Value="#4ADE80"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
